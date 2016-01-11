@@ -1,0 +1,1 @@
+{"time":"<TIME>","name":"log","level":"info","data":{"message":"TestLoggerInfof"},"context":{"host":"<HOST>","processId":"<PROCESS_ID>"},"id":"<ID>","version":"0"}

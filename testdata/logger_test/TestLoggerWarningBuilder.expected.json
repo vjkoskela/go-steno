@@ -1,0 +1,1 @@
+{"time":"<TIME>","name":"log","level":"warn","data":{"message":"TestLoggerWarningBuilder"},"context":{"host":"<HOST>","processId":"<PROCESS_ID>"},"id":"<ID>","version":"0"}

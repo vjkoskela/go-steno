@@ -1,0 +1,1 @@
+{"time":"<TIME>","name":"log","level":"crit","data":{"message":"TestLoggerErrorf"},"context":{"host":"<HOST>","processId":"<PROCESS_ID>"},"id":"<ID>","version":"0"}

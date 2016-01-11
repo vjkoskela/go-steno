@@ -1,0 +1,12 @@
+language: go
+sudo: false
+go:
+- 1.5
+go_import_path: github.com/vjkoskela/gosteno
+install:
+- go get -t ./...
+script:
+- go install
+- go test -coverprofile=coverage.out
+- go install ./examples
+- go install ./performance
