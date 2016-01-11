@@ -1,0 +1,1 @@
+{"time":"<TIME>","name":"custom_event","level":"debug","data":{"message":"TestFormatterSpecifiedEventName"},"context":{"host":"<HOST>","processId":"<PROCESS_ID>"},"id":"<ID>","version":"0"}

@@ -1,0 +1,1 @@
+{"time":"<TIME>","name":"log","level":"debug","data":{"message":"TestFormatterComplexData","map":{"a":"A","b":"B"},"list":[1,2],"obj":{"Name":"TestFormatterComplexData","Parts":[{"Name":"TestFormatterComplexData-1"},{"Name":"TestFormatterComplexData-2"}]},"foo":"bar","one":1,"pi":3.14},"context":{},"id":"<ID>","version":"0"}

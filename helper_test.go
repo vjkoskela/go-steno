@@ -25,11 +25,15 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-func HelperTestGetLogger(n string, l logrus.Level) (*Logger, *bytes.Buffer) {
+var (
+	stenoSchemaLoader = gojsonschema.NewReferenceLoader("file://./testdata/steno.schema.json")
+)
+
+func HelperTestGetLogger(n string, l logrus.Level, f *Formatter) (*Logger, *bytes.Buffer) {
 	var buffer *bytes.Buffer = new(bytes.Buffer)
 	var logrusLogger *logrus.Logger = &logrus.Logger{
 		Out: buffer,
-		Formatter: formatter,
+		Formatter: f,
 		Level: l,
 	}
 	return GetLoggerForLogger(n, logrusLogger), buffer
@@ -43,6 +47,10 @@ func HelperTestVerifyEmpty(t *testing.T, actualBuffer *bytes.Buffer) {
 }
 
 func HelperTestVerify(t *testing.T, actualBuffer *bytes.Buffer, actualFile string) {
+	HelperTestVerifyIgnoreContext(t, actualBuffer, actualFile, []string{})
+}
+
+func HelperTestVerifyIgnoreContext(t *testing.T, actualBuffer *bytes.Buffer, actualFile string, ignoreContextKeysForSchema []string) {
 	var err error
 	var expectedBuffer []byte
 	var result *gojsonschema.Result;
@@ -61,8 +69,19 @@ func HelperTestVerify(t *testing.T, actualBuffer *bytes.Buffer, actualFile strin
 		t.Errorf("Unmarshal of actual failed because %v in buffer %s", err, actualAsString)
 		return
 	}
-	var actualJsonLoader = gojsonschema.NewStringLoader(actualAsString)
-	if result, err = gojsonschema.Validate(stenoSchemaLoader, actualJsonLoader); err != nil {
+	var actualForValidationRootNode map[string]interface{}
+	if err = json.Unmarshal([]byte(actualAsString), &actualForValidationRootNode); err != nil {
+		t.Errorf("Unmarshal of actual failed because %v in buffer %s", err, actualAsString)
+		return
+	}
+	hideIgnoredKeys(actualForValidationRootNode, ignoreContextKeysForSchema)
+	var actualForValidationAsByteArray []byte
+	if actualForValidationAsByteArray, err = json.Marshal(actualForValidationRootNode); err != nil {
+		t.Errorf("Remarshal of actual failed because %v for %s", err, actualForValidationRootNode)
+		return
+	}
+	var actualForValidationJsonLoader = gojsonschema.NewStringLoader(string(actualForValidationAsByteArray))
+	if result, err = gojsonschema.Validate(stenoSchemaLoader, actualForValidationJsonLoader); err != nil {
 		t.Errorf("Validation against json schema failed because %v", err)
 		return
 	} else if !result.Valid() {
@@ -76,11 +95,27 @@ func HelperTestVerify(t *testing.T, actualBuffer *bytes.Buffer, actualFile strin
 	}
 }
 
-func normalize(r map[string]interface{}) {
-	r["id"] = "<ID>"
-	r["time"] = "<TIME>"
+func hideIgnoredKeys(r map[string]interface{}, ignoreContextKeys []string) {
 	if node, ok := r["context"].(map[string]interface{}); ok {
-		node["host"] = "<HOST>"
-		node["processId"] = "<PROCESS_ID>"
+		for i := range ignoreContextKeys {
+			delete(node, ignoreContextKeys[i])
+		}
+	}
+}
+
+func normalize(r map[string]interface{}) {
+	if _, ok := r["id"]; ok {
+		r["id"] = "<ID>"
+	}
+	if _, ok := r["time"]; ok {
+		r["time"] = "<TIME>"
+	}
+	if node, ok := r["context"].(map[string]interface{}); ok {
+		if _, ok := node["host"]; ok {
+			node["host"] = "<HOST>"
+		}
+		if _, ok := node["processId"]; ok {
+			node["processId"] = "<PROCESS_ID>"
+		}
 	}
 }
