@@ -11,7 +11,7 @@ go-steno
 </a>
 
 Implementation of [ArpNetworking's LogbackSteno](https://github.com/ArpNetworking/logback-steno) for [Go](https://golang.org). Extends [Sirupsen's logrus](https://github.com/Sirupsen/logrus)
-logging implementation with a [Steno compatible](https://github.com/ArpNetworking/logback-steno/blob/master/src/main/resources/steno.schema.json) Formatter as well as providing named Logger
+logging implementation with a [Steno compatible](testdata/steno.schema.json) Formatter as well as providing named Logger
 instances and a fluent log builder.
 
 Dependency
